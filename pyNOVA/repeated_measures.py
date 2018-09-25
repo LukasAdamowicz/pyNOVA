@@ -78,6 +78,8 @@ def anova(df, corr='GG', print_table=True, p_normal=0.05):
     # Effect Size
     stat['eta'] = ones(4) * (ss_cond/(ss_cond + ss_error))
 
+    stat = stat[['epsilon', 'Cond_DoF', 'Error_DoF', 'eta', 'F', 'p-value']]  # re-arrange for easier viewing
+
     # Normality Tests
     if p_normal is not None:
         normality = pd.DataFrame(df.apply(shapiro, axis=0)).transpose()
