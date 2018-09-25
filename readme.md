@@ -16,6 +16,10 @@ Currently the only implemented variation is the repeated measures ANOVA (`RM_ANO
 
 ### Repeated Measures ANOVA
 
+```Python
+F, p, eta = pyNOVA.RM_ANOVA(pandas.DataFrame, corr='GG', print_table=True, p_normal=0.05)
+```
+
 Calculates the _F-statistic_, _p-value_, and &eta;<sup>2</sup><sub>partial</sub> with the specified sphericity correction 
 (_Greenhouse-Geissler_, _Huynh-Feldt_, the average of the two, or none).  Will also display a table of statistics.
 
