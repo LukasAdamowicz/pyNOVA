@@ -1,6 +1,7 @@
 import pandas as pd
-from numpy import ones
-from scipy.stats import f as stats_f, shapiro
+from numpy import ones, array
+from scipy.stats import f as stats_f, shapiro, ttest_rel
+from itertools import combinations
 from .sphericity_functions import Greenhouse_Geisser, Huynh_Feldt
 
 _shapiro = shapiro  # backup
@@ -16,7 +17,7 @@ def shapiro(x):
 
 def anova(df, corr='GG', print_table=True, p_normal=0.05):
     """
-    Repeated measures Analysis of Variance.  Based on the implementation in SPSS.
+    Repeated measures Analysis of Variance.
 
     Parameters
     ----------
@@ -99,3 +100,30 @@ def anova(df, corr='GG', print_table=True, p_normal=0.05):
         return stat['F'][0], stat['p-value'][3], stat['eta'][0]
     else:
         return stat['F'][0], stat['p-value'][0], stat['eta'][0]
+
+
+def combination_t_test(df):
+    """
+    Individual dependent t-tests of all possible combinations of different timestamps.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        DataFrame of data to analyze.  Each column corresponds to a different timestamp/condition of data.
+
+    Returns
+    -------
+    comb_stats : pandas.DataFrame
+        DataFrame containing the test statistic and p-value.
+    """
+    cols = df.columns  # time stamps/conditions to test between
+    combs = list(combinations(cols, 2))  # get all the length 2 combinations of the columns of the dataFrame
+
+    # create a DataFrame to store the test results
+    ci = pd.MultiIndex.from_tuples(combs)  # create a heirarchical index
+    comb_stats = pd.DataFrame(index=ci, columns=['T', 'p'])
+
+    for cond1, cond2 in combs:
+        comb_stats.loc[cond1, cond2] = ttest_rel(df[cond1], df[cond2])
+
+
