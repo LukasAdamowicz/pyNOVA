@@ -102,7 +102,7 @@ def anova(df, corr='GG', print_table=True, p_normal=0.05):
         return stat['F'][0], stat['p-value'][0], stat['eta'][0]
 
 
-def combination_t_test(df):
+def combinations_t_test(df):
     """
     Individual dependent t-tests of all possible combinations of different timestamps.
 
@@ -114,7 +114,8 @@ def combination_t_test(df):
     Returns
     -------
     comb_stats : pandas.DataFrame
-        DataFrame containing the test statistic and p-value.
+        DataFrame containing the test statistic and p-value for all the combinations of time stamps/conditions
+        present in the DataFrame columns.
     """
     cols = df.columns  # time stamps/conditions to test between
     combs = list(combinations(cols, 2))  # get all the length 2 combinations of the columns of the dataFrame
@@ -125,5 +126,7 @@ def combination_t_test(df):
 
     for cond1, cond2 in combs:
         comb_stats.loc[cond1, cond2] = ttest_rel(df[cond1], df[cond2])
+
+    return comb_stats
 
 
