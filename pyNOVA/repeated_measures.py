@@ -133,15 +133,15 @@ def combinations_t_test(df, alpha=0.5, one_sided=True):
     for cond1, cond2 in combs:
         comb_stats.loc[cond1, cond2] = ttest_rel(df[cond1], df[cond2])
 
-    comb_stats['C1 _ C2'] = "="  # add empty column for direction of comparison result
+    comb_stats['Comparison'] = "="  # add empty column for direction of comparison result
     if one_sided:
         # if test statistic is positive, cond 1 > cond 2
-        comb_stats[(comb_stats.p <= alpha/2) & (comb_stats['T'] > 0)]['C1 _ C2'] = '>'
+        comb_stats.loc[(comb_stats.p.values <= alpha/2) & (comb_stats['T'].values > 0), 'Comparison'] = '>'
         # if test statistic is negative, cond 1 < cond 2
-        comb_stats[(comb_stats.p <= alpha/2) & (comb_stats['T'] < 0)]['C1 _ C2'] = '<'
+        comb_stats.loc[(comb_stats.p.values <= alpha/2) & (comb_stats['T'].values < 0), 'Comparison'] = '<'
     else:
         # if the p-value < alpha, the distributions do not have equivalent expected values
-        comb_stats[(comb_stats.p <= alpha)]['C1 _ C2'] = '!='
+        comb_stats.loc[(comb_stats.p.values <= alpha), 'Comparison'] = '!='
 
     return comb_stats
 
