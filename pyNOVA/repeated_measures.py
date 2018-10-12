@@ -102,7 +102,7 @@ def anova(df, corr='GG', print_table=True, p_normal=0.05):
         return stat['F'][0], stat['p-value'][0], stat['eta'][0]
 
 
-def combinations_t_test(df, alpha=0.5, one_sided=True):
+def combinations_t_test(df, alpha=0.05, one_sided=True):
     """
     Individual dependent t-tests of all possible combinations of different timestamps.  Uses scipy.stats.ttest_rel.
     This performs a two-sided t-test, however the one-sided result can be obtained from the sign of the test
@@ -136,9 +136,9 @@ def combinations_t_test(df, alpha=0.5, one_sided=True):
     comb_stats['Comparison'] = "="  # add empty column for direction of comparison result
     if one_sided:
         # if test statistic is positive, cond 1 > cond 2
-        comb_stats.loc[(comb_stats.p.values <= alpha/2) & (comb_stats['T'].values > 0), 'Comparison'] = '>'
+        comb_stats.loc[(comb_stats.p.values <= alpha) & (comb_stats['T'].values > 0), 'Comparison'] = '>'
         # if test statistic is negative, cond 1 < cond 2
-        comb_stats.loc[(comb_stats.p.values <= alpha/2) & (comb_stats['T'].values < 0), 'Comparison'] = '<'
+        comb_stats.loc[(comb_stats.p.values <= alpha) & (comb_stats['T'].values < 0), 'Comparison'] = '<'
     else:
         # if the p-value < alpha, the distributions do not have equivalent expected values
         comb_stats.loc[(comb_stats.p.values <= alpha), 'Comparison'] = '!='
