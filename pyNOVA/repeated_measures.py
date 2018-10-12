@@ -102,14 +102,20 @@ def anova(df, corr='GG', print_table=True, p_normal=0.05):
         return stat['F'][0], stat['p-value'][0], stat['eta'][0]
 
 
-def combinations_t_test(df):
+def combinations_t_test(df, alpha=0.5, one_sided=True):
     """
-    Individual dependent t-tests of all possible combinations of different timestamps.
+    Individual dependent t-tests of all possible combinations of different timestamps.  Uses scipy.stats.ttest_rel.
+    This performs a two-sided t-test, however the one-sided result can be obtained from the sign of the test
+    statistic and half of the returned p-value.
 
     Parameters
     ----------
     df : pandas.DataFrame
         DataFrame of data to analyze.  Each column corresponds to a different timestamp/condition of data.
+    alpha : float, optional
+        alpha level for determining if the null hypothesis can be rejected.  Defaults to 0.05.
+    one_sided : bool, optional
+        Return one-sided or two-sided interpretation of results in the output.  Defaults to True (return one-sided).
 
     Returns
     -------
@@ -126,6 +132,16 @@ def combinations_t_test(df):
 
     for cond1, cond2 in combs:
         comb_stats.loc[cond1, cond2] = ttest_rel(df[cond1], df[cond2])
+
+    comb_stats['C1 _ C2'] = "="  # add empty column for direction of comparison result
+    if one_sided:
+        # if test statistic is positive, cond 1 > cond 2
+        comb_stats[(comb_stats.p <= alpha/2) & (comb_stats['T'] > 0)]['C1 _ C2'] = '>'
+        # if test statistic is negative, cond 1 < cond 2
+        comb_stats[(comb_stats.p <= alpha/2) & (comb_stats['T'] < 0)]['C1 _ C2'] = '<'
+    else:
+        # if the p-value < alpha, the distributions do not have equivalent expected values
+        comb_stats[(comb_stats.p <= alpha)]['C1 _ C2'] = '!='
 
     return comb_stats
 
