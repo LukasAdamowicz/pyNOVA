@@ -121,7 +121,7 @@ def combinations_t_test(df):
     combs = list(combinations(cols, 2))  # get all the length 2 combinations of the columns of the dataFrame
 
     # create a DataFrame to store the test results
-    ci = pd.MultiIndex.from_tuples(combs)  # create a heirarchical index
+    ci = pd.MultiIndex.from_tuples(combs, names=['Cond. 1', 'Cond. 2'])  # create a heirarchical index
     comb_stats = pd.DataFrame(index=ci, columns=['T', 'p'])
 
     for cond1, cond2 in combs:
